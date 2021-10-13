@@ -1,0 +1,474 @@
+openapi: 3.0.0
+info:
+  title:  Book-Store REST API
+  description: Book-Store REST API where one can save books and retrieve books based on book's attributes in our store
+  version: 1.0.0
+servers: []
+# - url: 'https'
+paths:
+  'store/v1/books/save':
+    post:
+      tags:
+      - Save a book to our store
+      operationId: saveBook
+      summary: Save a book in the book store.
+      description: Save book in the book store.
+      responses:
+        '200':
+          description: Book saved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDto'
+
+        '400':
+          $ref: '#/components/responses/ErrorMessage'
+        '403':
+          $ref: '#/components/responses/ErrorMessage'
+        '500':
+          $ref: '#/components/responses/ErrorMessage'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookDto'
+
+        description: Information about the Book to be saved.
+        required: true
+
+  'store/v1/books/book/{id}':
+    put:
+      tags:
+      - Updating a book in our book store
+      operationId: updateBook
+      summary: Update a Book in our book store.
+      description: Update a Book in our book store.
+      parameters:
+      - name: bookId
+        in: path
+        required: true
+        description: The bookId used to know the book to update
+        schema:
+          type: long
+        example: 1
+      responses:
+        '200':
+          description: Book updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponseDto'
+
+        '400':
+          $ref: '#/components/responses/ErrorMessage'
+        '403':
+          $ref: '#/components/responses/ErrorMessage'
+        '500':
+          $ref: '#/components/responses/ErrorMessage'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookDto'
+
+        description: Information about the Book to be updated.
+        required: true
+
+
+    get:
+      tags:
+      - Get a book
+      operationId: getBookById
+      summary: Gets a book based on id
+      description: Return a book based on the id of the book
+      parameters:
+      - name: bookId
+        in: path
+        required: true
+        description: The bookId used to get the book
+        schema:
+          type: long
+        example: 1
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponseDto'
+        '404':
+          $ref: '#/components/responses/ErrorMessage'
+
+
+      delete:
+        tags:
+        - Delete a book
+        summary: Delete a book from our book store
+        description: Delete a book from our book store
+        operationId: deleteBookById
+        parameters:
+        - name: bookId
+          in: path
+          required: true
+          description: The Book Id.
+          schema:
+            type: long
+          example: 1
+        responses:
+          '200':
+            description: Deleted.
+          '400':
+            $ref: '#/components/responses/ErrorMessage'
+
+
+  'store/v1/books/all-books':
+    get:
+      tags:
+      - Gets books based on parameter values
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: The starting page
+        schema:
+          type: integer
+          example: 1
+      - name: size
+        in: query
+        required: false
+        description: The number of books per page
+        schema:
+          type: long
+          example: 1
+
+      - name: sortField
+        in: query
+        required: false
+        description: The sort field for sorting the books
+        schema:
+          type: string
+          example: title
+
+      - name: sortDirection
+        in: query
+        required: false
+        description: The direction of the sort, descending or ascending
+        schema:
+          type: string
+          example: desc
+
+      operationId: getAllBooks
+      summary: Return a list of books based on different parameters
+      description: Returns a list of books based on different parameter and it supports paging and sorting.
+
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooksResponse'
+
+
+
+  'store/v1/books/book/title/{title}':
+    get:
+      tags:
+      - Get a book
+      operationId: getBookByTitle
+      summary: Gets a book based on title
+      description: Return a book based on the title of the book
+      parameters:
+      - name: title
+        in: path
+        required: true
+        description: The title used to get the book
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponseDto'
+        '404':
+          $ref: '#/components/responses/ErrorMessage'
+
+  'store/v1/books/author/first-name/{name}':
+    get:
+      tags:
+      - Get a book
+      operationId: getBookByAuthor
+      summary: Gets a book based on author
+      description: Return a book based on the author's firstname
+      parameters:
+      - name:
+        in: path
+        required: true
+        description: The author firstname used to get the book
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponseDto'
+        '404':
+          $ref: '#/components/responses/ErrorMessage'
+
+
+  'store/v1/attributes/authors':
+    get:
+      tags:
+      - Get authors
+      operationId: getAllAuthors
+      summary: Return a list of authors registered in our book store
+      description: Returns a list of all authors registered in our store.
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+
+
+  'store/v1/attributes/categories':
+    get:
+      tags:
+      - Get Categories
+      operationId: getAllBookCategories
+      summary: Return a list of book categories registered in our book store
+      description: Returns a list of all book categories registered in our store.
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+
+
+  'store/v1/attributes/publishers':
+    get:
+      tags:
+      - Get publishers
+      operationId: getAllBookPublishers
+      summary: Return a list of book publishers registered in our book store
+      description: Returns a list of all book publishers registered in our store.
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publisher'
+
+
+
+  'store/v1/attributes/book-type':
+    get:
+      tags:
+      - Get book types
+      operationId: getAllBookTypes
+      summary: Return a list of book types registered in our book store
+      description: Returns a list of all book types registered in our store.
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookType'
+
+
+components:
+  responses:
+    ErrorMessage:
+      type: object
+      properties:
+        httpStatus:
+          type: integer
+        message:
+          type: string
+
+  schemas:
+    BookDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Mark Twain
+        numberOfPages:
+          type: integer
+          example: 1
+        publishedDate:
+          type: string
+          example: "2020-08-11"
+        writers:
+          type: array
+          items:
+            type: long
+            example: 1
+        catNumber:
+          type: long
+          example: 1
+        pubNumber:
+          type: long
+          example: 1
+        tNumber:
+          type: long
+          example: 1
+
+
+
+    UpdateBookDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Mark Twain
+        numberOfPages:
+          type: integer
+          example: 1
+        publishedDate:
+          type: string
+          example: "2020-08-11"
+        writers:
+          type: array
+          items:
+            type: long
+            example: 1
+        catNumber:
+          type: long
+          example: 1
+        pubNumber:
+          type: long
+          example: 1
+        tNumber:
+          type: long
+          example: 1
+
+
+    BookResponseDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Mark Twain
+        isbn:
+          type: string
+          example: 78fg-56gfg-hj897
+        numberOfPages:
+          type: integer
+          example: 1
+        publishedDate:
+          type: string
+          example: "2020-08-11"
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
+        category:
+          $ref: '#/components/schemas/Category'
+        publisher:
+          $ref: '#/components/schemas/Publisher'
+        type:
+          $ref: '#/components/schemas/BookType'
+
+
+    BooksResponse:
+      type: object
+      properties:
+        bookResponseDto:
+          type: array
+          items:
+           $ref: '#/components/schemas/BookResponseDto'
+
+
+
+    Author:
+      type: object
+      properties:
+        id:
+          type: long
+        firstName:
+          type: string
+          example: Mark
+        lastName:
+          type: string
+          example: Anthony
+
+
+
+    BookType:
+      type: object
+      properties:
+        id:
+          type: long
+          example: 1
+        name:
+          type: string
+          example: Fiction
+
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: long
+          example: 1
+        name:
+          type: string
+          example: Mathematics
+
+    Publisher:
+      type: object
+      properties:
+        id:
+          type: long
+          example: 1
+        name:
+          type: string
+          example: Pearson
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: long
+          example: 1
+        title:
+          type: string
+          example: Mark Twain
+        isbn:
+          type: string
+          example: 78fg-56gfg-hj897
+        numberOfPages:
+          type: integer
+          example: 1
+        publishedDate:
+          type: string
+          example: "2020-08-11"
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
+        category:
+          $ref: '#/components/schemas/Category'
+        publisher:
+          $ref: '#/components/schemas/Publisher'
+        type:
+          $ref: '#/components/schemas/BookType'
